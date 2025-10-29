@@ -1,4 +1,12 @@
-// Small, focused helpers for Strapi-driven card rendering
+// utils/cardUtils.ts  (or cardStyleUtils.ts — keep everything in one place)
+import type {
+  margin,
+  Padding,
+  fontStyle,
+  titleStyle,
+  descriptionStyle,
+  badge,
+} from '../types/strapitypes';
 
 export type ResizeModeRN =
   | 'cover'
@@ -52,8 +60,8 @@ export function pxToNumber(input?: string | number | null): number | undefined {
 export function mapFitToRN(fit?: string | null): ResizeModeRN {
   const f = String(fit || '').toLowerCase();
   if (f === 'contain') return 'contain';
-  if (f === 'fill') return 'stretch'; // closest equivalent
-  if (f === 'scale-down') return 'contain'; // closest equivalent
+  if (f === 'fill') return 'stretch';
+  if (f === 'scale-down') return 'contain';
   if (f === 'none') return 'cover';
   return 'cover';
 }
@@ -77,15 +85,11 @@ export function parseBackgroundPosition(pos?: string) {
 /** Try several places on a playlist item to resolve an image by key. */
 export function pickImageByKey(item: any, key?: string | null): string {
   if (!key) return '';
-  // 1) extensions map
   const ext = item?.extensions?.[key];
   if (typeof ext === 'string' && ext) return ext;
-
-  // 2) images map
   const img = item?.images?.[key];
   if (typeof img === 'string' && img) return img;
 
-  // 3) media_group array form
   const arr = Array.isArray(item?.media_group) ? item.media_group : null;
   if (arr) {
     const imageGroup = arr.find((g: any) => g?.type === 'image');
@@ -95,16 +99,96 @@ export function pickImageByKey(item: any, key?: string | null): string {
     if (keyed?.src) return keyed.src;
   }
 
-  // 4) media_group object form
   const obj = item?.media_group?.[key];
   if (obj) {
     if (typeof obj === 'string') return obj;
     if (typeof obj === 'object') return obj.src || obj.url || obj.uri || '';
   }
 
-  // 5) flat field
   const flat = item?.[key];
   if (typeof flat === 'string' && flat) return flat;
 
   return '';
 }
+
+/** ---------- New: moved from ContentCard ---------- */
+export const boxToOffsets = (b?: margin | Padding | null) => ({
+  top: pxToNumber(b?.top) ?? 0,
+  right: pxToNumber(b?.right) ?? 0,
+  bottom: pxToNumber(b?.bottom) ?? 0,
+  left: pxToNumber(b?.left) ?? 0,
+});
+
+export const textAlignFrom = (align?: string | null) => {
+  const a = String(align || '').toLowerCase();
+  if (a === 'center' || a === 'middle') return 'center' as const;
+  if (a === 'right') return 'right' as const;
+  return 'left' as const;
+};
+
+export const styleFromFont = (fs?: fontStyle | null): any => {
+  if (!fs) return {};
+  const out: any = {};
+  if (fs.fontSize != null) out.fontSize = fs.fontSize;
+  if (fs.fontWeight) out.fontWeight = fs.fontWeight as any;
+  if (fs.fontStyle) out.fontStyle = fs.fontStyle as any;
+  if (fs.lineHeight != null) out.lineHeight = fs.lineHeight;
+  if (fs.textDecoration) out.textDecorationLine = fs.textDecoration as any;
+  if (fs.textTransform) out.textTransform = fs.textTransform as any;
+  if (fs.color) out.color = fs.color;
+  return out;
+};
+
+export const toTextBlockStyle = (
+  s?: titleStyle | descriptionStyle | null,
+): { viewStyle: any; textStyle: any } => {
+  const viewStyle: any = {};
+  if (s?.height != null) viewStyle.height = s.height;
+  if (s?.width != null) viewStyle.width = s.width;
+
+  const textStyle: any = {
+    textAlign: textAlignFrom(s?.align),
+    ...(s?.color ? { color: s.color } : {}),
+    ...styleFromFont(s?.fontStyle),
+  };
+
+  return { viewStyle, textStyle };
+};
+
+export const badgeAnchorStyle = (b?: badge | null): any => {
+  if (!b) return {};
+  const pos = String(b?.position || '').toLowerCase();
+  const { top, right, bottom, left } = boxToOffsets(b?.margin);
+  const base: any = { position: 'absolute' };
+
+  if (pos.includes('top') && pos.includes('left'))
+    return { ...base, top, left };
+  if (pos.includes('top') && pos.includes('right'))
+    return { ...base, top, right };
+  if (pos.includes('bottom') && pos.includes('left'))
+    return { ...base, bottom, left };
+  if (pos.includes('bottom') && pos.includes('right'))
+    return { ...base, bottom, right };
+
+  if (pos === 'top') return { ...base, top, left };
+  if (pos === 'bottom') return { ...base, bottom, left };
+  if (pos === 'right') return { ...base, top, right };
+  return { ...base, top, left };
+};
+
+/** Pick title/desc text by key with sensible fallbacks */
+export const pickTextByKey = (
+  item: any,
+  key?: string | null,
+  fallback?: string,
+): string | undefined => {
+  if (!key) return fallback;
+  const direct = item?.[key];
+  if (typeof direct === 'string' && direct) return direct;
+  const ext = item?.extensions?.[key];
+  if (typeof ext === 'string' && ext) return ext;
+  if (key === 'title') return item?.title ?? fallback;
+  if (key === 'summary' || key === 'description' || key === 'desc')
+    return item?.desc ?? fallback;
+  return fallback;
+};

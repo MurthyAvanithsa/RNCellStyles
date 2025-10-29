@@ -25,7 +25,7 @@ const isNonEmptyObject = (v: any) =>
   v && typeof v === 'object' && Object.keys(v).length > 0;
 
 const pickBorder = (v: any | null | undefined): border | undefined => {
-  console.log({ v });
+  // console.log({ v });
   if (!isNonEmptyObject(v)) return undefined;
   const out: border = {
     id: v.id ?? undefined,

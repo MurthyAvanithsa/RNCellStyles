@@ -9,6 +9,7 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import HomeScreen from './screens/HomeScreen';
 import TctExclusivesScreen from './screens/TctExclusivesScreen';
+import ShowsScreen from './screens/ShowsScreen';
 
 function App() {
   return (
@@ -21,8 +22,9 @@ function App() {
 function AppContent() {
   return (
     <View style={styles.container}>
-      {/* <HomeScreen /> */}
-      <TctExclusivesScreen />
+      <HomeScreen />
+      {/* <TctExclusivesScreen /> */}
+      {/* <ShowsScreen /> */}
     </View>
   );
 }
@@ -30,8 +32,8 @@ function AppContent() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    // backgroundColor: '#000',
+    // backgroundColor: '#fff',
+    backgroundColor: '#000',
   },
 });
 
