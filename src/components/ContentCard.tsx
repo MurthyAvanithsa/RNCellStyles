@@ -59,6 +59,12 @@ const ContentCard = memo(({ content, cardStyle }: Props) => {
     [content, secondaryKey],
   );
 
+  // console.log({
+  //   primaryUri,
+  //   secondaryUri,
+  //   primaryKey,
+  //   secondaryKey,
+  // });
   // Text
   const titleText = cardStyle.showTitle
     ? pickTextByKey(content, cardStyle?.titleSourceKey, content?.title)
@@ -102,7 +108,7 @@ const ContentCard = memo(({ content, cardStyle }: Props) => {
 
   // Render order based on `useSecondaryAsBackground`
   const bgFirst = !!cardStyle.useSecondaryAsBackground;
-
+  console.log({ containerH, containerW });
   return (
     <>
       {/* Visual container */}
@@ -112,6 +118,14 @@ const ContentCard = memo(({ content, cardStyle }: Props) => {
           width: containerW, // RN respects width + aspectRatio → height is computed
           height: containerH, // if both provided, height wins (but we typically set width only)
           borderRadius,
+          borderWidth: cardStyle?.borderStyle?.borderWidth || 0,
+          borderColor: cardStyle?.borderStyle?.borderColor || 'transparent',
+          borderStyle:
+            cardStyle?.borderStyle?.borderStyle === 'dashed'
+              ? 'dashed'
+              : cardStyle?.borderStyle?.borderStyle === 'dotted'
+              ? 'dotted'
+              : 'solid',
           overflow: 'hidden',
           // backgroundColor: 'transparent',
         }}

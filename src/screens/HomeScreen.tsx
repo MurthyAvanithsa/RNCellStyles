@@ -1,6 +1,6 @@
 // screens/HomeScreen.tsx
 import React, { useEffect, useMemo, useState } from 'react';
-import { View, Text, ActivityIndicator } from 'react-native';
+import { View, ScrollView, Text, ActivityIndicator } from 'react-native';
 import {
   resolveComponentForBlock,
   type PageLayoutComponent,
@@ -161,20 +161,16 @@ function RailLoader({
 
   return (
     <View style={{ paddingVertical: 12 }}>
-      {isHorizontal ? (
-        <Keyed
-          items={items}
-          cardStyle={selectedAcard}
-          showTitle={showTitle}
-          title={title}
-          fitCount={fitCount} // width calc only, list still scrolls
-          snap={(block as any)?.snap ?? true}
-          itemSpacing={(block as any)?.itemSpacing ?? 12}
-          itemWidthPct={(block as any)?.itemWidthPct ?? 0.78}
-        />
-      ) : (
-        <Keyed items={items} cardStyle={selectedAcard} />
-      )}
+      <Keyed
+        items={items}
+        cardStyle={selectedAcard}
+        showTitle={showTitle}
+        title={title}
+        fitCount={fitCount} // width calc only, list still scrolls
+        snap={(block as any)?.snap ?? true}
+        itemSpacing={(block as any)?.itemSpacing ?? 12}
+        itemWidthPct={(block as any)?.itemWidthPct ?? 0.78}
+      />
     </View>
   );
 }
@@ -243,7 +239,7 @@ export default function HomeScreen() {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <ScrollView style={{ flex: 1 }}>
       {blocks.map((block, i) => (
         <RailLoader
           key={`${pageInfo!.id}-${block.__component}-${block.id}-${i}`}
@@ -252,6 +248,6 @@ export default function HomeScreen() {
           cardSettings={cardSettings}
         />
       ))}
-    </View>
+    </ScrollView>
   );
 }

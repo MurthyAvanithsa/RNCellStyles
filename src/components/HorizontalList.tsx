@@ -27,7 +27,7 @@ const HorizontalList = ({
   fitCount,
 }: Props) => {
   const { width: screenW } = useWindowDimensions();
-
+  // const cardWidth =
   // If fitCount is provided, compute a uniform width so N items fit the viewport.
   const uniformWidth = useMemo(() => {
     if (!fitCount || fitCount <= 0) return null;
@@ -38,7 +38,7 @@ const HorizontalList = ({
   }, [fitCount, itemSpacing, screenW]);
   // Decide snap interval: uniform width → clean snapping; else fallback
   const snapInterval = itemSpacing;
-
+  console.log({ uniformWidth, screenW, fitCount });
   return (
     <View>
       {showTitle && !!title && (
